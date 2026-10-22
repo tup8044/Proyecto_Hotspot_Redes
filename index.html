@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Informe Técnico - Hotspot & Portal Cautivo Omada</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <div class="container">
+
+        <!-- SECCIÓN 1: PORTADA INSTITUCIONAL (ESTRUCTURA APILADA) -->
+        <header class="portada-card">
+            
+            <!-- Bloque 1: Universidad -->
+            <div class="bloque-portada text-center">
+                <h1 class="nombre-universidad">TECNOLÓGICO UNIVERSITARIO PLAYACAR</h1>
+                <h2 class="nombre-carrera">INGENIERÍA EN SISTEMAS COMPUTACIONALES</h2>
+                <div class="divider"></div>
+            </div>
+
+            <!-- Bloque 2: Materia y Proyecto -->
+            <div class="bloque-portada text-center">
+                <span class="badge-portada">ASIGNATURA</span>
+                <h3 class="materia-titulo">132. PROCESO DE TESTEO DE REDES 27-1</h3>
+                
+                <span class="badge-portada">PROYECTO INTEGRADOR</span>
+                <p class="proyecto-titulo">Implementación y Validación de Hotspot con Portal Cautivo vía Vouchers en Omada Controller con TP-Link ER605 y Steren COM-825</p>
+            </div>
+
+            <!-- Bloque 3: Docente -->
+            <div class="bloque-portada">
+                <span class="etiqueta-box">DOCENTE</span>
+                <p class="nombre-docente">Prof. Héctor Leonel Pérez Ramírez</p>
+            </div>
+
+            <!-- Bloque 4: Integrantes a 2 Columnas -->
+            <div class="bloque-portada">
+                <div class="text-center" style="margin-bottom: 15px;">
+                    <span class="etiqueta-box text-center" style="font-size: 0.95rem;">INTEGRANTES DEL EQUIPO</span>
+                </div>
+                <ul class="lista-integrantes-2col" id="listaIntegrantes">
+                    <li>Alexis Uriel Poot González</li>
+                    <li>Carlos Enrique Ramírez Díaz</li>
+                    <li>Erikc Zepeta Ramírez</li>
+                    <li>Jonathan Adulfo Aparicio Cabrera</li>
+                    <li>Jonathan Enrique Palomo Córdova</li>
+                    <li>Juan Diego Dionicio Arévalo</li>
+                    <li>Luis Angel Ku Ake</li>
+                    <li>Marc Anthony Grande Rosales</li>
+                    <li>Oscar Mario Alarcón Barzón</li>
+                    <li>Pablo Rafael Verduzco Díaz</li>
+                    <li>Sael Jafath Castaño Ortiz</li>
+                    <li>Uziel Novelo Ek</li>
+                </ul>
+            </div>
+
+            <!-- Bloque 5: Pie de Página -->
+            <div class="bloque-portada text-center footer-portada-box">
+                <p>Playa del Carmen, Quintana Roo &bull; Octubre 2026</p>
+            </div>
+
+        </header>
+
+        <!-- SECCIÓN 2: DESARROLLO DEL INFORME TÉCNICO -->
+        <main class="documentacion-container">
+
+            <!-- 1. INTRODUCCIÓN Y CONTEXTO -->
+            <section class="card">
+                <h2>1. Introducción y Descripción del Proyecto</h2>
+                <p>En los entornos de red académicos y comerciales contemporáneos, la provisión de acceso a Internet inalámbrico para visitantes requiere un estricto control de autenticación, gestión de ancho de banda y aislamiento de clientes. La presente práctica documenta el diseño, la implementación física, la configuración lógica y el proceso de testeo de una solución de <strong>Hotspot con Portal Cautivo basado en Vouchers</strong> (fichas de acceso precalculadas con límite de tiempo).</p>
+                <p>Para lograr la arquitectura deseada, se empleó un router empresarial <strong>TP-Link Omada ER605</strong> integrado con el software de gestión unificada <strong>Omada Controller</strong>, acoplado a un router de consumo <strong>Steren COM-825</strong> reconfigurado para operar en modo <em>Punto de Acceso / Puente Transparente (Transparent Bridge)</em>, desactivando sus servicios DHCP locales para delegar el control de direcciones y autenticación al ER605.</p>
+            </section>
+
+            <!-- 2. OBJETIVOS Y RESULTADOS ESPERADOS -->
+            <section class="card">
+                <h2>2. Objetivos y Resultados Esperados</h2>
+                <div class="grid-2">
+                    <div>
+                        <h3>Objetivos Generales y Específicos</h3>
+                        <ul>
+                            <li><strong>General:</strong> Implementar y verificar un sistema de Portal Cautivo funcional mediante fichas temporales (vouchers) utilizando la plataforma Omada SD-WAN.</li>
+                            <li><strong>Segmentación de Red:</strong> Migrar el direccionamiento predeterminado a la subred segmentada <code>192.168.10.0/24</code>.</li>
+                            <li><strong>Integración Multimarca:</strong> Configurar el equipo Steren COM-825 como un Access Point neutro sin interferencia de DHCP.</li>
+                            <li><strong>Pruebas de Testeo:</strong> Validar la redirección automática, la generación de lotes de fichas de 6 dígitos e inspección de tráfico en el Dashboard.</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h3>Resultados Esperados de la Práctica</h3>
+                        <ul>
+                            <li><strong>Intercepción de Clientes:</strong> Todo cliente inalámbrico que se conecte a la SSID <code>Fichas_Práctica</code> debe ser redirigido obligatoriamente al Portal Cautivo antes de obtener salida a Internet.</li>
+                            <li><strong>Consumo de Fichas:</strong> Los códigos de 6 dígitos deben cambiar de estado <em>Unused</em> a <em>In-use</em> y caducar tras 1 hora de navegación.</li>
+                            <li><strong>Estabilidad de Red:</strong> Evitar conflictos de IP asegurando que el ER605 sea el único servidor DHCP activo.</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 3. TOPOLOGÍA Y REQUISITOS TÉCNICOS -->
+            <section class="card">
+                <h2>3. Arquitectura y Parámetros de Red</h2>
+                <div class="grid-2">
+                    <div>
+                        <h3>Inventario de Hardware y Software</h3>
+                        <ul>
+                            <li><strong>Router Gateway:</strong> TP-Link Omada ER605 v2.20 (Firmware Build 20251029).</li>
+                            <li><strong>Punto de Acceso:</strong> Steren COM-825 (Configuración AP Bridge).</li>
+                            <li><strong>Servidor Controller:</strong> Software Omada Controller ejecutado en Laptop Windows.</li>
+                            <li><strong>Medio de Conexión:</strong> Cableado de Par Trenzado UTP Cat 5e / Cat 6.</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h3>Matriz de Direccionamiento IP</h3>
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Dispositivo / Elemento</th>
+                                    <th>Rol / Función</th>
+                                    <th>Dirección IP / Subred</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>TP-Link ER605</td>
+                                    <td>Gateway & Servidor DHCP</td>
+                                    <td>192.168.10.1 /24</td>
+                                </tr>
+                                <tr>
+                                    <td>Laptop Administrador</td>
+                                    <td>Servidor Omada Controller</td>
+                                    <td>192.168.10.2 /24 (Estática/Reservada)</td>
+                                </tr>
+                                <tr>
+                                    <td>Steren COM-825</td>
+                                    <td>Access Point Bridge</td>
+                                    <td>192.168.0.1 (DHCP Desactivado)</td>
+                                </tr>
+                                <tr>
+                                    <td>Clientes Inalámbricos</td>
+                                    <td>Smartphones / Laptops</td>
+                                    <td>192.168.10.3 - 192.168.10.254</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 4. GUÍA DE CONFIGURACIÓN PASO A PASO CON IMÁGENES INTEGRADAS -->
+            <section class="card">
+                <h2>4. Procedimiento Metodológico Paso a Paso</h2>
+                <div class="pasos-container">
+                    
+                    <div class="paso-box">
+                        <span class="paso-num">Paso 1</span>
+                        <h4>Interconexión Física del Equipamiento</h4>
+                        <p>Se realiza el ensamble del entorno físico conectando el router TP-Link ER605 mediante su puerto LAN a la laptop del administrador y enlazando un puerto LAN del ER605 hacia la interfaz del Access Point Steren COM-825.</p>
+                        <div class="paso-img-wrapper" onclick="openModal('assets/img/img_1.png', 'Paso 1: Armado físico del entorno de pruebas')">
+                            <img src="assets/img/img_1.png" alt="Paso 1 - Maqueta Física">
+                        </div>
+                    </div>
+
+                    <div class="paso-box">
+                        <span class="paso-num">Paso 2</span>
+                        <h4>Acceso e Inicio de Sesión en Omada Controller</h4>
+                        <p>Se ejecuta la consola web del controlador Omada e inicia sesión con las credenciales administrativas configuradas para el proyecto (<code>Pablo_Verduzco</code>).</p>
+                        <div class="paso-img-wrapper" onclick="openModal('assets/img/img_2.png', 'Paso 2: Login en Omada Controller')">
+                            <img src="assets/img/img_2.png" alt="Paso 2 - Login Omada">
+                        </div>
+                    </div>
+
+                    <div class="paso-box">
+                        <span class="paso-num">Paso 3</span>
+                        <h4>Inicialización del Sitio de Trabajo (Parte 1)</h4>
+                        <p>Se crea un nuevo sitio dentro de la plataforma denominado <code>Práctica_Hotspot</code> asignando la zona horaria (UTC-05:00) y la región correspondiente a México.</p>
+                        <div class="paso-img-wrapper" onclick="openModal('assets/img/img_3.png', 'Paso 3: Creación del nuevo sitio en Omada')">
+                            <img src="assets/img/img_3.png" alt="Paso 3 - Crear Sitio 1">
+                        </div>
+                    </div>
+
+                    <div class="paso-box">
+                        <span class="paso-num">Paso 4</span>
+                        <h4>Establecimiento de Credenciales del Sitio (Parte 2)</h4>
+                        <p>Se define la cuenta global de administración de dispositivos (Device Account) bajo el usuario del proyecto para asegurar la adopción de la infraestructura.</p>
+                        <div class="paso-img-wrapper" onclick="openModal('assets/img/img_4.png', 'Paso 4: Credenciales del Device Account')">
+                            <img src="assets/img/img_4.png" alt="Paso 4 - Crear Sitio 2">
+                        </div>
+                    </div>
+
+                    <div class="paso-box">
+                        <span class="paso-num">Paso 5</span>
+                        <h4>Adopción Inicial del Gateway ER605</h4>
+                        <p>En el panel de la lista de dispositivos de Omada, el router ER605 es detectado en la IP por defecto <code>192.168.0.1</code> y adoptado reflejando el estado <em>CONNECTED</em>.</p>
+                        <div class="paso-img-wrapper" onclick="openModal('assets/img/img_5.png', 'Paso 5: Adopción exitosa del ER605')">
+                            <img src="assets/img/img_5.png" alt="Paso 5 - ER605 Connected">
+                        </div>
+                    </div>
+
+                    <div class="paso-box">
+                        <span class="paso-num">Paso 6</span>
+                        <h4>Reestructuración de la Subred LAN</h4>
+                        <p>Se modifican los parámetros de la red LAN predeterminada, cambiando la dirección del Gateway de <code>192.168.0.1</code> a la subred segmentada <code>192.168.10.1/24</code>.</p>
+                        <div class="paso-img-wrapper" onclick="openModal('assets/img/img_6.png', 'Paso 6: Cambio de direccionamiento LAN a 192.168.10.1/24')">
+                            <img src="assets/img/img_6.png" alt="Paso 6 - Subred LAN">
+                        </div>
+                    </div>
+
+                    <div class="paso-box">
+                        <span class="paso-num">Paso 7</span>
+                        <h4>Configuración del Servidor DHCP y DNS</h4>
+                        <p>Se habilita el servidor DHCP asignando el rango de direcciones desde <code>192.168.10.1</code> hasta <code>192.168.10.254</code> y especificando DNS primarios públicos (<code>8.8.8.8</code> / <code>1.1.1.1</code>).</p>
+                        <div class="paso-img-wrapper" onclick="openModal('assets/img/img_7.png', 'Paso 7: Ajustes de DHCP Server y DNS')">
+                            <img src="assets/img/img_7.png" alt="Paso 7 - DHCP DNS">
+                        </div>
+                    </div>
+
+                    <div class="paso-box">
+                        <span class="paso-num">Paso 8</span>
+                        <h4>Verificación de IP en la Estación de Trabajo</h4>
+                        <p>Se ejecuta la consola de comandos de Windows (<code>cmd</code>) con el comando <code>ipconfig</code>, verificando la asignación de la IP <code>192.168.10.2</code> en la laptop.</p>
+                        <div class="paso-img-wrapper" onclick="openModal('assets/img/img_8.png', 'Paso 8: Confirmación de IP con ipconfig')">
+                            <img src="assets/img/img_8.png" alt="Paso 8 - IPConfig Laptop">
+                        </div>
+                    </div>
+
+                    <div class="paso-box">
+                        <span class="paso-num">Paso 9</span>
+                        <h4>Confirmación del Gateway en la Nueva Subred</h4>
+                        <p>Se valida en Omada Controller que el Gateway ER605 ha actualizado correctamente su IP de gestión a <code>192.168.10.1</code> manteniendo la conectividad.</p>
+                        <div class="paso-img-wrapper" onclick="openModal('assets/img/img_9.png', 'Paso 9: ER605 operando en 192.168.10.1')">
+                            <img src="assets/img/img_9.png" alt="Paso 9 - ER605 en 10.1">
+                        </div>
+                    </div>
+
+                    <div class="paso-box">
+                        <span class="paso-num">Paso 10</span>
+                        <h4>Creación de la Regla de Portal Cautivo</h4>
+                        <p>En el menú de autenticación Hotspot, se configura la regla <code>Práctica_Fichas</code> seleccionando el tipo <strong>Voucher</strong> vinculado a la red LAN Default.</p>
+                        <div class="paso-img-wrapper" onclick="openModal('assets/img/img_10.png', 'Paso 10: Regla de Portal Cautivo Práctica_Fichas')">
+                            <img src="assets/img/img_10.png" alt="Paso 10 - Regla Portal">
+                        </div>
+                    </div>
+
+                    <div class="paso-box">
+                        <span class="paso-num">Paso 11</span>
+                        <h4>Generación del Lote de Vouchers (Lote_1)</h4>
+                        <p>Se genera el lote de fichas <code>Lote_1</code> estableciendo una cantidad de 10 cupones numéricos de 6 dígitos válidos por 1 hora de navegación.</p>
+                        <div class="paso-img-wrapper" onclick="openModal('assets/img/img_11.png', 'Paso 11: Parámetros del Lote_1 de Vouchers')">
+                            <img src="assets/img/img_11.png" alt="Paso 11 - Crear Lote">
+                        </div>
+                    </div>
+
+                    <div class="paso-box">
+                        <span class="paso-num">Paso 12</span>
+                        <h4>Inspección Estadística del Lote Creado</h4>
+                        <p>Se revisa la gráfica de distribución del lote en el controlador, confirmando los 10 Vouchers creados y disponibles.</p>
+                        <div class="paso-img-wrapper" onclick="openModal('assets/img/img_12.png', 'Paso 12: Métricas de Lote_1')">
+                            <img src="assets/img/img_12.png" alt="Paso 12 - Métricas Lote">
+                        </div>
+                    </div>
+
+                    <div class="paso-box">
+                        <span class="paso-num">Paso 13</span>
+                        <h4>Exportación de Códigos Generados</h4>
+                        <p>Se visualiza la tabla detallada de códigos numéricos únicos (ej. <code>722274</code>, <code>117430</code>) listos para su entrega a clientes en estado <em>Unused</em>.</p>
+                        <div class="paso-img-wrapper" onclick="openModal('assets/img/img_13.png', 'Paso 13: Tabla de códigos de fichas creados')">
+                            <img src="assets/img/img_13.png" alt="Paso 13 - Lista Códigos">
+                        </div>
+                    </div>
+
+                    <div class="paso-box">
+                        <span class="paso-num">Paso 14</span>
+                        <h4>Monitoreo del Dashboard de Autenticación</h4>
+                        <p>Se verifica el Dashboard de Omada corroborando la actividad del servicio Hotspot y la métrica de autenticación por Voucher.</p>
+                        <div class="paso-img-wrapper" onclick="openModal('assets/img/img_14.png', 'Paso 14: Registro en Dashboard')">
+                            <img src="assets/img/img_14.png" alt="Paso 14 - Dashboard Omada">
+                        </div>
+                    </div>
+
+                    <div class="paso-box">
+                        <span class="paso-num">Paso 15</span>
+                        <h4>Configuración del SSID en el AP Steren</h4>
+                        <p>Se ingresa a la interfaz del equipo Steren COM-825 (<code>192.168.0.1</code>) ajustando el nombre de la red inalámbrica a <code>Fichas_Práctica</code> en modo abierto.</p>
+                        <div class="paso-img-wrapper" onclick="openModal('assets/img/img_15.png', 'Paso 15: Configuración SSID Steren COM-825')">
+                            <img src="assets/img/img_15.png" alt="Paso 15 - SSID Steren">
+                        </div>
+                    </div>
+
+                    <div class="paso-box">
+                        <span class="paso-num">Paso 16</span>
+                        <h4>Aplicación de Cambios Inalámbricos en Steren</h4>
+                        <p>Se guardan los ajustes de la interfaz de radio del Steren COM-825 emitiendo la señal para los dispositivos clientes.</p>
+                        <div class="paso-img-wrapper" onclick="openModal('assets/img/img_16.png', 'Paso 16: Guardado de parámetros en Steren')">
+                            <img src="assets/img/img_16.png" alt="Paso 16 - Guardar Steren">
+                        </div>
+                    </div>
+
+                    <div class="paso-box">
+                        <span class="paso-num">Paso 17</span>
+                        <h4>Desactivación del Servidor DHCP del AP Steren</h4>
+                        <p><strong>Paso Crítico:</strong> Se deshabilita el servidor DHCP interno del Steren COM-825 para evitar colisiones de red y garantizar que la asignación de IP la realice el TP-Link ER605.</p>
+                        <div class="paso-img-wrapper" onclick="openModal('assets/img/img_17.png', 'Paso 17: Desactivación del DHCP en Steren')">
+                            <img src="assets/img/img_17.png" alt="Paso 17 - Desactivar DHCP Steren">
+                        </div>
+                    </div>
+
+                    <div class="paso-box">
+                        <span class="paso-num">Paso 18</span>
+                        <h4>Verificación del Panel Avanzado del Steren</h4>
+                        <p>Se revisan las opciones de estado y configuración general del Steren COM-825 para validar su comportamiento transparente en puente.</p>
+                        <div class="paso-img-wrapper" onclick="openModal('assets/img/img_18.png', 'Paso 18: Estado avanzado Steren COM-825')">
+                            <img src="assets/img/img_18.png" alt="Paso 18 - Panel Avanzado Steren">
+                        </div>
+                    </div>
+
+                    <div class="paso-box">
+                        <span class="paso-num">Paso 19</span>
+                        <h4>Prueba Final de Autenticación en Smartphone</h4>
+                        <p>Un celular cliente se conecta a <code>Fichas_Práctica</code>, es redirigido al Portal Cautivo e ingresa un código de ficha válido habilitando su acceso a Internet.</p>
+                        <div class="paso-img-wrapper" onclick="openModal('assets/img/img_19.png', 'Paso 19: Pantalla del Portal Cautivo en smartphone')">
+                            <img src="assets/img/img_19.png" alt="Paso 19 - Portal en Celular">
+                        </div>
+                    </div>
+
+                </div>
+            </section>
+
+            <!-- 5. EVIDENCIA EN VIDEO -->
+            <section class="card">
+                <h2>5. Video Demostrativo del Proceso de Testeo</h2>
+                <p>Prueba en tiempo real que demuestra la intercepción del tráfico Wi-Fi, la redirección automática al Portal Cautivo en el dispositivo cliente, la validación del código de cupón de 6 dígitos y el posterior acceso a servicios web de alta velocidad.</p>
+                
+                <div class="video-container">
+                    <video id="videoPlayer" controls poster="assets/img/img_1.png">
+                        <source src="assets/video/vd_1.mp4" type="video/mp4">
+                        Tu navegador no soporta la reproducción de video HTML5.
+                    </video>
+                </div>
+            </section>
+
+            <!-- 6. ANÁLISIS DE ERRORES PRESENTADOS Y SOLUCIONES -->
+            <section class="card">
+                <h2>6. Análisis de Errores Presentados y Soluciones</h2>
+                <div class="pasos-container">
+                    
+                    <div class="error-box">
+                        <span class="error-badge">Problema 1</span>
+                        <h4>Doble Servidor DHCP Activo en la Misma Subred</h4>
+                        <p><strong>Síntoma:</strong> Los dispositivos móviles obtenían direcciones IP fuera del rango <code>192.168.10.x</code> (obtenían IPs del segmento <code>192.168.0.x</code>) y no eran redirigidos al Portal Cautivo.</p>
+                        <p><strong>Causa Raíz:</strong> El Access Point Steren COM-825 mantenía encendido su propio servidor DHCP interno compitiendo contra el router ER605.</p>
+                        <p><strong>Solución Implementada:</strong> Se ingresó a la administración web del Steren COM-825 (<code>192.168.0.1</code>) y se desactivó manualmente el servicio DHCP, obligándolo a actuar únicamente como un puente (Bridge) inalámbrico puro.</p>
+                    </div>
+
+                    <div class="error-box">
+                        <span class="error-badge">Problema 2</span>
+                        <h4>Falta de Redirección Automática al Conectarse al Wi-Fi</h4>
+                        <p><strong>Síntoma:</strong> Al conectar el smartphone a la red <code>Fichas_Práctica</code>, el navegador del sistema no saltaba automáticamente a la pantalla de inicio de sesión de Omada.</p>
+                        <p><strong>Causa Raíz:</strong> Omada Controller no tenía habilitada la interceptación de tráfico para la interfaz inalámbrica predeterminada.</p>
+                        <p><strong>Solución Implementada:</strong> Se revisó la regla de Portal Cautivo <code>Práctica_Fichas</code> dentro del controlador asegurando que estuviera vinculada a la red <code>Default [Network]</code> y activando la opción <em>Controller Online Required</em>.</p>
+                    </div>
+
+                    <div class="error-box">
+                        <span class="error-badge">Problema 3</span>
+                        <h4>Pérdida de Comunicación con el ER605 tras el Cambio de IP</h4>
+                        <p><strong>Síntoma:</strong> Al cambiar la subred de <code>192.168.0.1</code> a <code>192.168.10.1</code>, la laptop perdió temporalmente el acceso a la interfaz web de administración.</p>
+                        <p><strong>Causa Raíz:</strong> La tarjeta de red de la laptop conservaba en caché la dirección IP anterior suministrada antes del cambio de segmento.</p>
+                        <p><strong>Solución Implementada:</strong> Se ejecutaron los comandos <code>ipconfig /release</code> e <code>ipconfig /renew</code> desde la consola de Windows para solicitar una nueva dirección IP al servidor DHCP en la subred <code>192.168.10.0/24</code>.</p>
+                    </div>
+
+                </div>
+            </section>
+
+            <!-- 7. CONCLUSIONES Y RECOMENDACIONES -->
+            <section class="card">
+                <h2>7. Conclusiones y Recomendaciones Técnicas</h2>
+                <div class="grid-2">
+                    <div>
+                        <h3>Conclusiones del Proyecto</h3>
+                        <p><strong>Conclusión Grupal:</strong> Se demostró exitosamente que es viable estructurar infraestructuras de red de alta seguridad integrando hardware empresarial con dispositivos de consumo comercial mediante la correcta separación de capas de red (Capa 2 y Capa 3). La eliminación de servidores DHCP secundarios en puntos de acceso puente es vital para la integridad del control de accesos.</p>
+                        <p style="margin-top:0.8rem;"><strong>Aporte Individual:</strong> El testeo exhaustivo con cupones temporales asegura que las empresas o instituciones universitarias puedan monetizar o normar el tráfico Wi-Fi previniendo el consumo desmedido de ancho de banda por usuarios no autorizados.</p>
+                    </div>
+                    <div>
+                        <h3>Recomendaciones Técnicas</h3>
+                        <ul>
+                            <li><strong>Certificados SSL/TLS:</strong> Instalar un certificado SSL válido en el controlador Omada para evitar advertencias de seguridad HTTPS al momento de la redirección automática en móviles.</li>
+                            <li><strong>VLANs Dedicadas:</strong> Implementar VLANs de tráfico de invitados aisladas de la VLAN de gestión administrativa de la infraestructura.</li>
+                            <li><strong>Límites de Ancho de Banda:</strong> Asignar perfiles de velocidad (ej. 5 Mbps de bajada / 2 Mbps de subida) a cada Voucher generado para asegurar equidad en la red.</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+
+    </div>
+
+    <!-- Modal visor de imágenes -->
+    <div id="imageModal" class="modal" onclick="closeModal()">
+        <span class="modal-close">&times;</span>
+        <img class="modal-content" id="modalImg">
+        <div id="modalCaption" class="modal-caption-text"></div>
+    </div>
+
+    <!-- Script JS -->
+    <script src="js/script.js"></script>
+</body>
+</html>
